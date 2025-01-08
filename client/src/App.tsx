@@ -5,12 +5,14 @@ import { Box, Typography, Container } from '@mui/material'
 import { Provider } from 'react-redux'
 import { theme } from './config/theme'
 import { store } from './store/store'
+import { Header } from './components/layout/header'
 
 const App: FC = () => {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <Header />
         <Container maxWidth="lg">
           <Box sx={{ my: 4 }}>
             <Typography variant="h4" component="h1" gutterBottom>
