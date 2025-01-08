@@ -4,11 +4,13 @@ import {
   Box, 
   Typography, 
   TextField,
-  Stack
+  Stack,
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { useState } from 'react';
 import { useAppDispatch } from '../../store/store';
-import { login } from '../../store/features/authSlice';
+import { useLoginMutation, setCredentials } from '../../store/features/authSlice';
 
 interface LoginModalProps {
   open: boolean;
@@ -22,6 +24,7 @@ const LoginModal = ({ open, onClose, onSwitchToSignup }: LoginModalProps) => {
     email: '',
     password: ''
   });
+  const [login, { isLoading, error }] = useLoginMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -33,10 +36,11 @@ const LoginModal = ({ open, onClose, onSwitchToSignup }: LoginModalProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await dispatch(login(formData)).unwrap();
+      const result = await login(formData).unwrap();
+      dispatch(setCredentials(result));
       onClose();
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (err) {
+      console.error('Failed to login:', err);
     }
   };
 
@@ -65,6 +69,12 @@ const LoginModal = ({ open, onClose, onSwitchToSignup }: LoginModalProps) => {
           Login
         </Typography>
         
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {(error as any)?.data?.message || 'Login failed'}
+          </Alert>
+        )}
+        
         <Stack spacing={3}>
           <TextField
             label="Email"
@@ -90,8 +100,9 @@ const LoginModal = ({ open, onClose, onSwitchToSignup }: LoginModalProps) => {
             variant="contained"
             color="primary"
             fullWidth
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? <CircularProgress size={24} /> : 'Login'}
           </Button>
           
           <Box sx={{ textAlign: 'center' }}>

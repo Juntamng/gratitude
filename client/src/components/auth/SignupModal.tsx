@@ -9,13 +9,15 @@ import {
   Divider,
   Stack,
   InputAdornment,
+  Alert,
+  CircularProgress,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import GoogleIcon from '@mui/icons-material/Google'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useAppDispatch } from '../../store/store'
-import { login } from '../../store/features/authSlice'
+import { useSignupMutation, setCredentials } from '../../store/features/authSlice'
 
 interface SignupModalProps {
   open: boolean
@@ -32,17 +34,20 @@ export const SignupModal: FC<SignupModalProps> = ({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [signup, { isLoading, error }] = useSignupMutation()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await dispatch(login({
+      const result = await signup({
         email,
-        password
-      })).unwrap();
+        password,
+        name: email.split('@')[0]
+      }).unwrap()
+      dispatch(setCredentials(result))
       onClose()
-    } catch (error) {
-      console.error('Signup failed:', error)
+    } catch (err) {
+      console.error('Failed to signup:', err)
     }
   }
 
@@ -85,6 +90,12 @@ export const SignupModal: FC<SignupModalProps> = ({
           Find new ideas to try
         </Typography>
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {(error as any)?.data?.message || 'Signup failed'}
+          </Alert>
+        )}
+
         <Stack spacing={3}>
           <TextField
             fullWidth
@@ -123,9 +134,10 @@ export const SignupModal: FC<SignupModalProps> = ({
             variant="contained"
             fullWidth
             size="large"
+            disabled={isLoading}
             sx={{ bgcolor: 'error.main', '&:hover': { bgcolor: 'error.dark' } }}
           >
-            Continue
+            {isLoading ? <CircularProgress size={24} /> : 'Continue'}
           </Button>
 
           <Divider>OR</Divider>

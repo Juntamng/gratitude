@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 interface User {
   id: string;
@@ -8,9 +9,8 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
-  loading: boolean;
-  error: string | null;
 }
 
 interface LoginCredentials {
@@ -18,62 +18,70 @@ interface LoginCredentials {
   password: string;
 }
 
+interface SignupCredentials extends LoginCredentials {
+  name: string;
+}
+
+interface AuthResponse {
+  user: User;
+  token: string;
+}
+
 const initialState: AuthState = {
   user: null,
-  isAuthenticated: false,
-  loading: false,
-  error: null
+  token: null,
+  isAuthenticated: false
 };
 
-export const login = createAsyncThunk(
-  'auth/login',
-  async (credentials: LoginCredentials) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Mock successful login
-    if (credentials.email && credentials.password) {
-      return {
-        user: {
-          id: '1',
-          name: 'Test User',
-          email: credentials.email
-        }
-      };
-    }
-    
-    throw new Error('Invalid credentials');
-  }
-);
+export const authApi = createApi({
+  reducerPath: 'authApi',
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: 'http://localhost:5000/api',
+    prepareHeaders: (headers, { getState }) => {
+      // Get token from state
+      const token = (getState() as any).auth.token;
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  endpoints: (builder) => ({
+    login: builder.mutation<AuthResponse, LoginCredentials>({
+      query: (credentials) => ({
+        url: '/auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    signup: builder.mutation<AuthResponse, SignupCredentials>({
+      query: (credentials) => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+  }),
+});
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setCredentials: (state, { payload: { user, token } }) => {
+      state.user = user;
+      state.token = token;
+      state.isAuthenticated = true;
+    },
     logout: (state) => {
       state.user = null;
+      state.token = null;
       state.isAuthenticated = false;
-      state.error = null;
+      localStorage.removeItem('auth');
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(login.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.loading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.error = null;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Login failed';
-      });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { useLoginMutation, useSignupMutation } = authApi;
+export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer; 
