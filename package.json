@@ -1,0 +1,29 @@
+{
+  "name": "your-app",
+  "version": "1.0.0",
+  "description": "Full stack application with React and Node.js",
+  "private": true,
+  "scripts": {
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install",
+    "install:all": "npm install && npm run install:client && npm run install:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "build": "npm run build:server && npm run build:client",
+    "clean": "rimraf node_modules client/node_modules server/node_modules",
+    "start": "cd server && npm start",
+    "lint": "concurrently \"cd client && npm run lint\" \"cd server && npm run lint\"",
+    "test": "concurrently \"cd client && npm test\" \"cd server && npm test\""
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "rimraf": "^5.0.1"
+  }
+} 
