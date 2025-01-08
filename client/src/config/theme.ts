@@ -20,4 +20,15 @@ export const theme = createTheme({
       'sans-serif',
     ].join(','),
   },
+  components: {
+    MuiModal: {
+      styleOverrides: {
+        root: {
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          },
+        },
+      },
+    },
+  },
 }); 

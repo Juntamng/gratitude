@@ -1,25 +1,39 @@
 import { FC } from 'react'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import { Box, Typography, Container } from '@mui/material'
+import { Box } from '@mui/material'
 import { Provider } from 'react-redux'
+import { BrowserRouter, Routes, Route, useRoutes } from 'react-router-dom'
 import { theme } from './config/theme'
 import { store } from './store/store'
 import { Header } from './components/layout/header'
+import MainContainer from './components/layout/MainContainer'
+import { routes } from './routes'
+
+const AppRoutes = () => {
+  return useRoutes(routes);
+};
 
 const App: FC = () => {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Header />
-        <Container maxWidth="lg">
-          <Box sx={{ my: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              React + TypeScript + Vite + Material UI + Redux
-            </Typography>
+        <BrowserRouter>
+          <Box
+            sx={{
+              minHeight: '100vh',
+              display: 'flex',
+              flexDirection: 'column',
+              bgcolor: 'background.default'
+            }}
+          >
+            <Header />
+            <MainContainer>
+              <AppRoutes />
+            </MainContainer>
           </Box>
-        </Container>
+        </BrowserRouter>
       </ThemeProvider>
     </Provider>
   )
