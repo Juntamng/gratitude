@@ -5,28 +5,15 @@ export const theme = createTheme({
     primary: {
       main: '#1976d2',
     },
-    secondary: {
-      main: '#dc004e',
+    error: {
+      main: '#d32f2f',
     },
   },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-    ].join(','),
-  },
   components: {
-    MuiModal: {
+    MuiButton: {
       styleOverrides: {
         root: {
-          '& .MuiBackdrop-root': {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          },
+          textTransform: 'none',
         },
       },
     },
