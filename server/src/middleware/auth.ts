@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { createClient } from '@supabase/supabase-js';
-import { UserData } from '../types/auth';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_KEY!
 );
 
 export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,12 +19,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
       return res.status(401).json({ message: 'Invalid token' });
     }
 
-    req.user = {
-      id: user.id,
-      email: user.email!,
-      name: user.user_metadata.name || user.email!.split('@')[0]
-    } as UserData;
-
+    req.user = user;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Authentication failed' });

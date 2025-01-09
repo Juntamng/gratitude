@@ -1,25 +1,12 @@
-import { FC } from 'react'
-import { Typography } from '@mui/material'
+import { Typography, Box } from '@mui/material'
+import { Link } from 'react-router-dom'
 
-export const Logo: FC = () => {
+export const Logo = () => {
   return (
-    <Typography
-      variant="h6"
-      noWrap
-      component="div"
-      sx={{
-        flexGrow: 1,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1,
-      }}
-    >
-      <img 
-        src="/logo.svg" 
-        alt="Logo" 
-        style={{ height: '32px' }}
-      />
-      Your App
-    </Typography>
+    <Box component={Link} to="/" sx={{ textDecoration: 'none', color: 'inherit' }}>
+      <Typography variant="h6" component="span">
+        Gratitude
+      </Typography>
+    </Box>
   )
 } 

@@ -10,7 +10,8 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useAppDispatch } from '../../store/store';
-import { useLoginMutation, setCredentials } from '../../store/features/authSlice';
+import { setCredentials } from '../../store/features/authSlice';
+import { useLoginMutation } from '../../store/features/authApi';
 
 interface LoginModalProps {
   open: boolean;
@@ -37,7 +38,10 @@ const LoginModal = ({ open, onClose, onSwitchToSignup }: LoginModalProps) => {
     e.preventDefault();
     try {
       const result = await login(formData).unwrap();
-      dispatch(setCredentials(result));
+      dispatch(setCredentials({
+        user: result.user,
+        session: result.session
+      }));
       onClose();
     } catch (err) {
       console.error('Failed to login:', err);

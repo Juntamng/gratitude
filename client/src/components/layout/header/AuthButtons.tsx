@@ -1,73 +1,74 @@
 import { FC, useState } from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import { Button, Stack, Typography } from '@mui/material'
 import { useAppSelector, useAppDispatch } from '../../../store/store'
 import { logout } from '../../../store/features/authSlice'
 import LoginModal from '../../auth/LoginModal'
-import { SignupModal } from '../../auth/SignupModal'
+import SignupModal from '../../auth/SignupModal'
+import { CreateGratitudeModal } from '../../gratitude/CreateGratitudeModal'
 
 export const AuthButtons: FC = () => {
   const dispatch = useAppDispatch()
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [signupOpen, setSignupOpen] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
 
-  const handleLogout = () => {
-    dispatch(logout())
+  const switchToSignup = () => {
+    setLoginOpen(false)
+    setSignupOpen(true)
   }
 
   const switchToLogin = () => {
-    setIsSignupModalOpen(false)
-    setIsLoginModalOpen(true)
+    setSignupOpen(false)
+    setLoginOpen(true)
   }
 
-  const switchToSignup = () => {
-    setIsLoginModalOpen(false)
-    setIsSignupModalOpen(true)
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Stack direction="row" spacing={1}>
+          <Button variant="outlined" onClick={() => setLoginOpen(true)}>
+            Login
+          </Button>
+          <Button variant="contained" onClick={() => setSignupOpen(true)}>
+            Sign Up
+          </Button>
+        </Stack>
+        <LoginModal 
+          open={loginOpen} 
+          onClose={() => setLoginOpen(false)} 
+          onSwitchToSignup={switchToSignup}
+        />
+        <SignupModal 
+          open={signupOpen} 
+          onClose={() => setSignupOpen(false)}
+          onSwitchToLogin={switchToLogin}
+        />
+      </>
+    )
   }
 
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        {isAuthenticated ? (
-          <>
-            <Typography sx={{ alignSelf: 'center' }}>
-              Welcome, {user?.name}
-            </Typography>
-            <Button 
-              color="inherit"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button 
-              color="inherit"
-              onClick={() => setIsLoginModalOpen(true)}
-            >
-              Login
-            </Button>
-            <Button 
-              variant="contained" 
-              color="error"
-              onClick={() => setIsSignupModalOpen(true)}
-            >
-              Sign Up
-            </Button>
-          </>
-        )}
-      </Box>
-
-      <LoginModal 
-        open={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSwitchToSignup={switchToSignup}
-      />
-      <SignupModal 
-        open={isSignupModalOpen}
-        onClose={() => setIsSignupModalOpen(false)}
-        onSwitchToLogin={switchToLogin}
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Typography>Welcome, {user?.name}</Typography>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={() => setCreateOpen(true)}
+        >
+          Share Gratitude
+        </Button>
+        <Button 
+          variant="outlined"
+          onClick={() => dispatch(logout())}
+        >
+          Logout
+        </Button>
+      </Stack>
+      <CreateGratitudeModal 
+        open={createOpen} 
+        onClose={() => setCreateOpen(false)} 
       />
     </>
   )

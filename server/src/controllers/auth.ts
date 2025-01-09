@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { createClient } from '@supabase/supabase-js';
-import { UserData } from '../types/auth';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -27,14 +26,18 @@ export const login = async (req: Request, res: Response) => {
 
     if (error) throw error;
 
-    const userData: UserData = {
-      id: data.user.id,
-      email: data.user.email!,
-      name: data.user.user_metadata.name || email.split('@')[0]
-    };
+    // Get profile data
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name, email')
+      .eq('id', data.user.id)
+      .single();
 
     res.json({
-      user: userData,
+      user: {
+        ...data.user,
+        name: profile?.name || data.user.email?.split('@')[0]
+      },
       token: data.session.access_token
     });
   } catch (error: any) {
@@ -63,14 +66,16 @@ export const signup = async (req: Request, res: Response) => {
 
     if (error) throw error;
 
-    const userData: UserData = {
-      id: data.user!.id,
-      email: data.user!.email!,
-      name: data.user!.user_metadata.name
-    };
+    // Create profile
+    await supabase
+      .from('profiles')
+      .insert([{ id: data.user!.id, email, name }]);
 
     res.json({
-      user: userData,
+      user: {
+        ...data.user,
+        name
+      },
       token: data.session?.access_token
     });
   } catch (error: any) {

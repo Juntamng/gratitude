@@ -1,17 +1,13 @@
 import { FC } from 'react'
-import {
-  AppBar,
-  Container,
-  Toolbar,
-} from '@mui/material'
+import { AppBar, Toolbar, Container } from '@mui/material'
 import { Logo } from './Logo'
 import { AuthButtons } from './AuthButtons'
 
 export const Header: FC = () => {
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" color="inherit" elevation={1}>
       <Container maxWidth="lg">
-        <Toolbar disableGutters>
+        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 0 } }}>
           <Logo />
           <AuthButtons />
         </Toolbar>

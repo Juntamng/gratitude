@@ -3,16 +3,12 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { Box } from '@mui/material'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Routes, Route, useRoutes } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { theme } from './config/theme'
 import { store } from './store/store'
 import { Header } from './components/layout/header'
 import MainContainer from './components/layout/MainContainer'
-import { routes } from './routes'
-
-const AppRoutes = () => {
-  return useRoutes(routes);
-};
+import { GratitudeGrid } from './components/gratitude/GratitudeGrid'
 
 const App: FC = () => {
   return (
@@ -30,7 +26,9 @@ const App: FC = () => {
           >
             <Header />
             <MainContainer>
-              <AppRoutes />
+              <Routes>
+                <Route path="/" element={<GratitudeGrid />} />
+              </Routes>
             </MainContainer>
           </Box>
         </BrowserRouter>

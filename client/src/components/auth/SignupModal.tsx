@@ -1,55 +1,50 @@
-import { FC, useState } from 'react'
-import {
-  Modal,
-  Box,
-  Typography,
+import { 
+  Button, 
+  Modal, 
+  Box, 
+  Typography, 
   TextField,
-  Button,
-  IconButton,
-  Divider,
   Stack,
-  InputAdornment,
   Alert,
-  CircularProgress,
-} from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
-import GoogleIcon from '@mui/icons-material/Google'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { useAppDispatch } from '../../store/store'
-import { useSignupMutation, setCredentials } from '../../store/features/authSlice'
+  CircularProgress
+} from '@mui/material';
+import { useState } from 'react';
+import { useAppDispatch } from '../../store/store';
+import { setCredentials } from '../../store/features/authSlice';
+import { useSignupMutation } from '../../store/features/authApi';
 
 interface SignupModalProps {
-  open: boolean
-  onClose: () => void
-  onSwitchToLogin: () => void
+  open: boolean;
+  onClose: () => void;
+  onSwitchToLogin: () => void;
 }
 
-export const SignupModal: FC<SignupModalProps> = ({ 
-  open, 
-  onClose,
-  onSwitchToLogin 
-}) => {
-  const dispatch = useAppDispatch()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [signup, { isLoading, error }] = useSignupMutation()
+const SignupModal = ({ open, onClose, onSwitchToLogin }: SignupModalProps) => {
+  const dispatch = useAppDispatch();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
+  const [signup, { isLoading, error }] = useSignupMutation();
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const result = await signup({
-        email,
-        password,
-        name: email.split('@')[0]
-      }).unwrap()
-      dispatch(setCredentials(result))
-      onClose()
+      const result = await signup(formData).unwrap();
+      dispatch(setCredentials(result));
+      onClose();
     } catch (err) {
-      console.error('Failed to signup:', err)
+      console.error('Failed to signup:', err);
     }
-  }
+  };
 
   return (
     <Modal
@@ -59,7 +54,7 @@ export const SignupModal: FC<SignupModalProps> = ({
     >
       <Box
         component="form"
-        onSubmit={handleSignup}
+        onSubmit={handleSubmit}
         sx={{
           position: 'absolute',
           top: '50%',
@@ -67,104 +62,75 @@ export const SignupModal: FC<SignupModalProps> = ({
           transform: 'translate(-50%, -50%)',
           width: 400,
           bgcolor: 'background.paper',
-          borderRadius: 2,
           boxShadow: 24,
           p: 4,
+          borderRadius: 2,
         }}
       >
-        <IconButton
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-          }}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-
-        <Typography variant="h5" component="h2" textAlign="center" mb={1}>
-          Welcome to Your App
+        <Typography variant="h5" component="h2" gutterBottom>
+          Sign Up
         </Typography>
-        <Typography variant="body2" color="text.secondary" textAlign="center" mb={3}>
-          Find new ideas to try
-        </Typography>
-
+        
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {(error as any)?.data?.message || 'Signup failed'}
           </Alert>
         )}
-
+        
         <Stack spacing={3}>
           <TextField
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
             fullWidth
+            required
+          />
+          <TextField
             label="Email"
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+          <TextField
+            label="Password"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            fullWidth
             required
           />
           
-          <TextField
-            fullWidth
-            label="Create a password"
-            variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type={showPassword ? 'text' : 'password'}
-            required
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
           <Button
             type="submit"
             variant="contained"
+            color="primary"
             fullWidth
-            size="large"
             disabled={isLoading}
-            sx={{ bgcolor: 'error.main', '&:hover': { bgcolor: 'error.dark' } }}
           >
-            {isLoading ? <CircularProgress size={24} /> : 'Continue'}
+            {isLoading ? <CircularProgress size={24} /> : 'Sign Up'}
           </Button>
-
-          <Divider>OR</Divider>
-
-          <Button
-            variant="outlined"
-            fullWidth
-            startIcon={<GoogleIcon />}
-            size="large"
-          >
-            Continue with Google
-          </Button>
-
+          
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-              Already a member?{' '}
-              <Button
-                variant="text"
-                sx={{ p: 0, minWidth: 'auto' }}
-                onClick={onSwitchToLogin}
-              >
-                Log in
-              </Button>
+            <Typography variant="body2" component="span">
+              Already have an account?{' '}
             </Typography>
+            <Button
+              variant="text"
+              onClick={onSwitchToLogin}
+              sx={{ p: 0, minWidth: 'auto' }}
+            >
+              Login
+            </Button>
           </Box>
         </Stack>
       </Box>
     </Modal>
-  )
-} 
+  );
+};
+
+export default SignupModal; 
