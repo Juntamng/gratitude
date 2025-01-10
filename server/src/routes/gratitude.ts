@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { getGratitudes, createGratitude, likeGratitude } from '../controllers/gratitude';
+import { getGratitudes, createGratitude, toggleLike } from '../controllers/gratitude';
 import { verifyToken } from '../middleware/auth';
 
 const router = Router();
@@ -16,6 +16,6 @@ router.post('/',
   createGratitude
 );
 
-router.post('/:id/like', verifyToken, likeGratitude);
+router.post('/:id/like', verifyToken, toggleLike);
 
 export { router as gratitudeRouter }; 

@@ -20,6 +20,7 @@ const transformGratitude = async (data: Gratitude): Promise<GratitudeResponse> =
     content: data.content,
     imageUrl: data.image_url,
     likes: data.likes,
+    liked_by: data.liked_by || [],
     date: data.created_at,
     author: profile?.name || profile?.email?.split('@')[0] || 'Anonymous'
   };
@@ -76,23 +77,32 @@ export const createGratitude = async (req: Request, res: Response) => {
   }
 };
 
-export const likeGratitude = async (req: Request, res: Response) => {
+export const toggleLike = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const userId = req.user!.id;
 
-    // First get current likes
+    // First get current likes and liked_by array
     const { data: current, error: getError } = await supabase
       .from('gratitudes')
-      .select('likes')
+      .select('likes, liked_by')
       .eq('id', id)
       .single();
 
     if (getError) throw getError;
 
-    // Then update with incremented value
+    const liked_by = current?.liked_by || [];
+    const isLiked = liked_by.includes(userId);
+
+    // Update likes count and liked_by array
     const { data, error } = await supabase
       .from('gratitudes')
-      .update({ likes: (current?.likes || 0) + 1 })
+      .update({ 
+        likes: isLiked ? current.likes - 1 : current.likes + 1,
+        liked_by: isLiked 
+          ? liked_by.filter((id: string) => id !== userId)
+          : [...liked_by, userId]
+      })
       .eq('id', id)
       .select('*')
       .single();

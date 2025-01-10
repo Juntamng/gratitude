@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useState, useCallback } from 'react'
 import { Button, Stack, Typography } from '@mui/material'
 import { useAppSelector, useAppDispatch } from '../../../store/store'
 import { logout } from '../../../store/features/authSlice'
@@ -23,6 +23,10 @@ export const AuthButtons: FC = () => {
     setLoginOpen(true)
   }
 
+  const handleLoginClose = useCallback(() => {
+    setLoginOpen(false);
+  }, []);
+
   if (!isAuthenticated) {
     return (
       <>
@@ -36,7 +40,7 @@ export const AuthButtons: FC = () => {
         </Stack>
         <LoginModal 
           open={loginOpen} 
-          onClose={() => setLoginOpen(false)} 
+          onClose={handleLoginClose}
           onSwitchToSignup={switchToSignup}
         />
         <SignupModal 

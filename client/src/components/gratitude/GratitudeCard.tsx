@@ -7,24 +7,53 @@ import {
   Avatar,
   IconButton,
   CardMedia,
+  Tooltip,
 } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
-import ShareIcon from '@mui/icons-material/Share'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+// import ShareIcon from '@mui/icons-material/Share'
 import { Gratitude } from '../../types/gratitude'
-import { useLikeGratitudeMutation } from '../../store/features/gratitudeApi'
+import { useToggleLikeMutation } from '../../store/features/gratitudeApi'
+import { useAppSelector } from '../../store/store'
 
 interface GratitudeCardProps {
   gratitude: Gratitude;
 }
 
 export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude }) => {
-  const [likeGratitude] = useLikeGratitudeMutation();
+  const [toggleLike] = useToggleLikeMutation();
+  const userId = useAppSelector(state => state.auth.user?.id);
+  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+  const isLiked = gratitude.liked_by.includes(userId || '');
 
   const handleLike = async () => {
+    if (!isAuthenticated) return;
     try {
-      await likeGratitude(gratitude.id);
+      await toggleLike(gratitude.id);
     } catch (error) {
-      console.error('Failed to like:', error);
+      console.error('Failed to toggle like:', error);
+    }
+  };
+
+  // const handleShare = () => {
+  //   if (!isAuthenticated) return;
+  //   // Share functionality here
+  // };
+
+  const buttonStyles = {
+    '&.Mui-disabled': {
+      color: 'rgba(0, 0, 0, 0.26)',
+    },
+    padding: '4px',
+    '&:hover': {
+      backgroundColor: 'transparent'
+    },
+    '&:focus': {
+      backgroundColor: 'transparent',
+      outline: 'none'
+    },
+    '&.MuiIconButton-root': {
+      borderRadius: 0
     }
   };
 
@@ -67,15 +96,40 @@ export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude }) => {
       </CardContent>
       <CardContent sx={{ display: 'flex', justifyContent: 'space-between', pt: 0 }}>
         <Typography variant="body2" color="text.secondary">
-          {gratitude.likes} likes
+          {gratitude.likes} {gratitude.likes === 1 ? 'like' : 'likes'}
         </Typography>
         <div>
-          <IconButton size="small" onClick={handleLike}>
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton size="small">
-            <ShareIcon />
-          </IconButton>
+          <Tooltip title={!isAuthenticated ? "Login to like posts" : ""}>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={handleLike}
+                color={isLiked ? 'primary' : 'default'}
+                disabled={!isAuthenticated}
+                disableRipple
+                disableFocusRipple
+                disableTouchRipple
+                sx={buttonStyles}
+              >
+                {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+              </IconButton>
+            </span>
+          </Tooltip>
+          {/* <Tooltip title={!isAuthenticated ? "Login to share posts" : ""}>
+            <span>
+              <IconButton 
+                size="small"
+                onClick={handleShare}
+                disabled={!isAuthenticated}
+                disableRipple
+                disableFocusRipple
+                disableTouchRipple
+                sx={buttonStyles}
+              >
+                <ShareIcon />
+              </IconButton>
+            </span>
+          </Tooltip> */}
         </div>
       </CardContent>
     </Card>

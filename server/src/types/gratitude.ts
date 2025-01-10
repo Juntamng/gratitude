@@ -3,6 +3,7 @@ export interface Gratitude {
   content: string;
   image_url?: string;
   likes: number;
+  liked_by: string[];
   user_id: string;
   created_at: string;
 }
@@ -12,18 +13,12 @@ export interface CreateGratitudeDto {
   imageUrl?: string;
 }
 
-export interface GratitudeWithProfile extends Gratitude {
-  profiles: {
-    name: string;
-    email: string;
-  }[];
-}
-
 export interface GratitudeResponse {
   id: string;
   content: string;
   imageUrl?: string;
   likes: number;
+  liked_by: string[];
   date: string;
   author: string;
 } 

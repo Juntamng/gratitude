@@ -3,6 +3,7 @@ export interface Gratitude {
   content: string;
   imageUrl?: string;
   likes: number;
+  liked_by: string[];
   date: string;
   author: string;
 }

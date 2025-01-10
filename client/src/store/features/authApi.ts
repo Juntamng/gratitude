@@ -17,13 +17,15 @@ interface SignupCredentials extends LoginCredentials {
 }
 
 interface AuthResponse {
-  user: {
-    id: string;
-    email: string;
-    name?: string;
-  };
-  session: {
-    access_token: string;
+  data: {
+    user: {
+      id: string;
+      email: string;
+      name?: string;
+    };
+    session: {
+      access_token: string;
+    };
   };
 }
 

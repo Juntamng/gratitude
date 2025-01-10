@@ -37,12 +37,18 @@ const LoginModal = ({ open, onClose, onSwitchToSignup }: LoginModalProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await login(formData).unwrap();
+      const response = await login(formData).unwrap();
+      
       dispatch(setCredentials({
-        user: result.user,
-        session: result.session
+        user: response.data.user,
+        session: response.data.session
       }));
-      onClose();
+      
+      setTimeout(() => {
+        setFormData({ email: '', password: '' });
+        onClose();
+      }, 0);
+      
     } catch (err) {
       console.error('Failed to login:', err);
     }

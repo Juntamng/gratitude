@@ -28,7 +28,7 @@ export const gratitudeApi = createApi({
       }),
       invalidatesTags: ['Gratitude'],
     }),
-    likeGratitude: builder.mutation<void, string>({
+    toggleLike: builder.mutation<Gratitude, string>({
       query: (id) => ({
         url: `/gratitudes/${id}/like`,
         method: 'POST',
@@ -41,5 +41,5 @@ export const gratitudeApi = createApi({
 export const {
   useGetGratitudesQuery,
   useCreateGratitudeMutation,
-  useLikeGratitudeMutation,
+  useToggleLikeMutation,
 } = gratitudeApi; 

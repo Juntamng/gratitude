@@ -38,8 +38,12 @@ const SignupModal = ({ open, onClose, onSwitchToLogin }: SignupModalProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await signup(formData).unwrap();
-      dispatch(setCredentials(result));
+      const response = await signup(formData).unwrap();
+      dispatch(setCredentials({
+        user: response.data.user,
+        session: response.data.session
+      }));
+      setFormData({ name: '', email: '', password: '' });
       onClose();
     } catch (err) {
       console.error('Failed to signup:', err);
