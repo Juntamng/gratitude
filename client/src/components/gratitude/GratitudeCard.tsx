@@ -18,9 +18,10 @@ import { useAppSelector } from '../../store/store'
 
 interface GratitudeCardProps {
   gratitude: Gratitude;
+  isMobile: boolean;
 }
 
-export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude }) => {
+export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude, isMobile }) => {
   const [toggleLike] = useToggleLikeMutation();
   const userId = useAppSelector(state => state.auth.user?.id);
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -61,12 +62,12 @@ export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude }) => {
     <Card 
       sx={{ 
         maxWidth: '100%',
-        borderRadius: 2,
-        '&:hover': {
+        borderRadius: isMobile ? 0 : 2,
+        '&:hover': !isMobile ? {
           boxShadow: 6,
           transform: 'translateY(-4px)',
           transition: 'transform 0.2s ease-in-out'
-        }
+        } : undefined
       }}
     >
       {gratitude.imageUrl && (

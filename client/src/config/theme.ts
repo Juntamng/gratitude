@@ -38,9 +38,14 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '@media (min-width: 0px)': {
+            paddingLeft: 0,
+            paddingRight: 0,
+            marginTop: 0
+          },
+          '@media (min-width: 600px)': {
             paddingLeft: 16,
             paddingRight: 16,
-          },
+          }
         },
       },
     },
@@ -54,14 +59,19 @@ export const theme = createTheme({
           minWidth: 200,
           boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
           '& .MuiMenuItem-root': {
-            padding: '8px 16px',
-            transition: 'background-color 0.2s ease',
+            padding: '10px 16px',
+            transition: 'all 0.2s ease',
             '&:hover': {
               backgroundColor: 'rgba(25, 118, 210, 0.08)',
+              transform: 'translateX(4px)'
             },
             '& .MuiListItemIcon-root': {
               minWidth: 36,
-              color: 'inherit'
+              color: 'inherit',
+              transition: 'transform 0.2s ease',
+            },
+            '&:hover .MuiListItemIcon-root': {
+              transform: 'scale(1.1)'
             }
           },
           '& .MuiDivider-root': {
@@ -73,9 +83,12 @@ export const theme = createTheme({
     MuiIconButton: {
       styleOverrides: {
         root: {
-          transition: 'transform 0.2s ease',
+          transition: 'all 0.3s ease',
           '&:hover': {
             transform: 'scale(1.05)'
+          },
+          '&:active': {
+            transform: 'scale(0.95)'
           }
         }
       }

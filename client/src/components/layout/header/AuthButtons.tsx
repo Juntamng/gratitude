@@ -59,6 +59,12 @@ export const AuthButtons: FC = () => {
     dispatch(logout());
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      handleMenuOpen(event as any);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -157,6 +163,7 @@ export const AuthButtons: FC = () => {
         <Tooltip title="Profile Menu">
           <IconButton 
             onClick={handleMenuOpen}
+            onKeyDown={handleKeyDown}
             aria-label="profile menu"
             aria-controls={Boolean(anchorEl) ? 'profile-menu' : undefined}
             aria-haspopup="true"
@@ -165,7 +172,11 @@ export const AuthButtons: FC = () => {
               '&:focus': {
                 outline: 'none'
               },
-              padding: 0
+              padding: 0,
+              '&:hover .MuiAvatar-root': {
+                transform: 'scale(1.05)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+              }
             }}
           >
             <Avatar 
