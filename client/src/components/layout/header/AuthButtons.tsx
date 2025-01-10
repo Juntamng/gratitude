@@ -1,5 +1,20 @@
-import { FC, useState, useCallback } from 'react'
-import { Button, Stack, Typography } from '@mui/material'
+import { FC, useState } from 'react'
+import { 
+  Button, 
+  Stack, 
+  Typography, 
+  useMediaQuery, 
+  useTheme,
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  Tooltip
+} from '@mui/material'
+import LogoutIcon from '@mui/icons-material/Logout';
+import AddIcon from '@mui/icons-material/Add';
 import { useAppSelector, useAppDispatch } from '../../../store/store'
 import { logout } from '../../../store/features/authSlice'
 import LoginModal from '../../auth/LoginModal'
@@ -8,24 +23,41 @@ import { CreateGratitudeModal } from '../../gratitude/CreateGratitudeModal'
 
 export const AuthButtons: FC = () => {
   const dispatch = useAppDispatch()
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
   const [loginOpen, setLoginOpen] = useState(false)
   const [signupOpen, setSignupOpen] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const switchToSignup = () => {
-    setLoginOpen(false)
-    setSignupOpen(true)
-  }
+    setLoginOpen(false);
+    setSignupOpen(true);
+  };
 
   const switchToLogin = () => {
-    setSignupOpen(false)
-    setLoginOpen(true)
-  }
+    setSignupOpen(false);
+    setLoginOpen(true);
+  };
 
-  const handleLoginClose = useCallback(() => {
-    setLoginOpen(false);
-  }, []);
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCreateGratitude = () => {
+    handleMenuClose();
+    setCreateOpen(true);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    dispatch(logout());
+  };
 
   if (!isAuthenticated) {
     return (
@@ -40,7 +72,7 @@ export const AuthButtons: FC = () => {
         </Stack>
         <LoginModal 
           open={loginOpen} 
-          onClose={handleLoginClose}
+          onClose={() => setLoginOpen(false)} 
           onSwitchToSignup={switchToSignup}
         />
         <SignupModal 
@@ -52,23 +84,119 @@ export const AuthButtons: FC = () => {
     )
   }
 
+  const menuItems = (
+    <>
+      <MenuItem 
+        onClick={handleCreateGratitude}
+        sx={{ 
+          '&:hover .MuiListItemIcon-root': { 
+            color: theme.palette.primary.main 
+          }
+        }}
+      >
+        <ListItemIcon>
+          <AddIcon fontSize="small" />
+        </ListItemIcon>
+        Share Gratitude
+      </MenuItem>
+      <Divider />
+      <MenuItem 
+        onClick={handleLogout}
+        sx={{ 
+          '&:hover .MuiListItemIcon-root': { 
+            color: theme.palette.error.main 
+          }
+        }}
+      >
+        <ListItemIcon>
+          <LogoutIcon fontSize="small" />
+        </ListItemIcon>
+        Logout
+      </MenuItem>
+    </>
+  );
+
+  const commonMenuProps = {
+    anchorEl,
+    open: Boolean(anchorEl),
+    onClose: handleMenuClose,
+    anchorOrigin: {
+      vertical: 'bottom',
+      horizontal: 'right',
+    },
+    transformOrigin: {
+      vertical: 'top',
+      horizontal: 'right',
+    },
+    sx: {
+      '& .MuiPaper-root': {
+        overflow: 'visible',
+        mt: 1.5,
+        '&:before': {
+          content: '""',
+          display: 'block',
+          position: 'absolute',
+          top: 0,
+          right: 14,
+          width: 10,
+          height: 10,
+          bgcolor: 'background.paper',
+          transform: 'translateY(-50%) rotate(45deg)',
+          zIndex: 0,
+        },
+      },
+    }
+  };
+
   return (
     <>
       <Stack direction="row" spacing={2} alignItems="center">
-        <Typography>Welcome, {user?.name}</Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => setCreateOpen(true)}
+        {!isMobile && (
+          <Typography>Welcome, {user?.name}</Typography>
+        )}
+        <Tooltip title="Profile Menu">
+          <IconButton 
+            onClick={handleMenuOpen}
+            aria-label="profile menu"
+            aria-controls={Boolean(anchorEl) ? 'profile-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
+            sx={{
+              '&:focus': {
+                outline: 'none'
+              },
+              padding: 0
+            }}
+          >
+            <Avatar 
+              sx={{ 
+                bgcolor: theme.palette.primary.main,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: theme.palette.primary.dark
+                }
+              }}
+            >
+              {user?.name?.[0].toUpperCase()}
+            </Avatar>
+          </IconButton>
+        </Tooltip>
+        <Menu
+          id={isMobile ? "profile-menu-mobile" : "profile-menu"}
+          {...commonMenuProps}
         >
-          Share Gratitude
-        </Button>
-        <Button 
-          variant="outlined"
-          onClick={() => dispatch(logout())}
-        >
-          Logout
-        </Button>
+          {isMobile && (
+            <>
+              <MenuItem disabled>
+                <Typography variant="subtitle2">
+                  Welcome, {user?.name}
+                </Typography>
+              </MenuItem>
+              <Divider />
+            </>
+          )}
+          {menuItems}
+        </Menu>
       </Stack>
       <CreateGratitudeModal 
         open={createOpen} 
