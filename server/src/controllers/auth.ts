@@ -1,41 +1,17 @@
 import { Request, Response } from 'express';
-import { createClient } from '@supabase/supabase-js';
-
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-  throw new Error('Missing required environment variables SUPABASE_URL or SUPABASE_SERVICE_KEY');
-}
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+import { validationResult } from 'express-validator';
+import { AuthService } from '../services/auth.service';
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) throw error;
-    if (!data.session || !data.user) {
-      throw new Error('Authentication failed');
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    res.json({
-      data: {
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name
-        },
-        session: {
-          access_token: data.session.access_token
-        }
-      }
-    });
+    const { email, password } = req.body;
+    const result = await AuthService.login(email, password);
+    res.json({ data: result });
   } catch (error: any) {
     console.error('Login error:', error);
     res.status(401).json({ message: error.message });
@@ -44,53 +20,14 @@ export const login = async (req: Request, res: Response) => {
 
 export const signup = async (req: Request, res: Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { email, password, name } = req.body;
-
-    // First check if user exists
-    const { data: existingUser } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('email', email)
-      .single();
-
-    if (existingUser) {
-      return res.status(400).json({ 
-        message: 'User already exists' 
-      });
-    }
-
-    // Proceed with signup
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name }
-      },
-    });
-
-    if (error) {
-      console.error('Supabase signup error:', error);
-      throw error;
-    }
-
-    if (!data.user) {
-      throw new Error('Signup failed - no user returned');
-    }
-
-    // Return user data
-    res.json({
-      data: {
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name
-        },
-        session: data.session && {
-          access_token: data.session.access_token
-        }
-      }
-    });
-
+    const result = await AuthService.signup(email, password, name);
+    res.json({ data: result });
   } catch (error: any) {
     console.error('Signup error:', error);
     res.status(400).json({ message: error.message });
@@ -100,27 +37,9 @@ export const signup = async (req: Request, res: Response) => {
 export const refresh = async (req: Request, res: Response) => {
   try {
     const { refresh_token } = req.body;
-    
-    const { data, error } = await supabase.auth.refreshSession({
-      refresh_token
-    });
-
-    if (error) throw error;
-    
-    res.json({
-      data: {
-        user: {
-          id: data.user?.id,
-          email: data.user?.email,
-          name: data.user?.user_metadata?.name
-        },
-        session: {
-          access_token: data.session?.access_token,
-          refresh_token: data.session?.refresh_token
-        }
-      }
-    });
-  } catch (error) {
+    const result = await AuthService.refresh(refresh_token);
+    res.json({ data: result });
+  } catch (error: any) {
     console.error('Refresh error:', error);
     res.status(401).json({ message: 'Failed to refresh token' });
   }
