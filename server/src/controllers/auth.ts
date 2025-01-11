@@ -95,4 +95,33 @@ export const signup = async (req: Request, res: Response) => {
     console.error('Signup error:', error);
     res.status(400).json({ message: error.message });
   }
+};
+
+export const refresh = async (req: Request, res: Response) => {
+  try {
+    const { refresh_token } = req.body;
+    
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token
+    });
+
+    if (error) throw error;
+    
+    res.json({
+      data: {
+        user: {
+          id: data.user?.id,
+          email: data.user?.email,
+          name: data.user?.user_metadata?.name
+        },
+        session: {
+          access_token: data.session?.access_token,
+          refresh_token: data.session?.refresh_token
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Refresh error:', error);
+    res.status(401).json({ message: 'Failed to refresh token' });
+  }
 }; 
