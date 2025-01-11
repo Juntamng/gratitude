@@ -20,6 +20,7 @@ import { logout } from '../../../store/features/authSlice'
 import LoginModal from '../../auth/LoginModal'
 import SignupModal from '../../auth/SignupModal'
 import { CreateGratitudeModal } from '../../gratitude/CreateGratitudeModal'
+import PersonIcon from '@mui/icons-material/Person';
 
 export const AuthButtons: FC = () => {
   const dispatch = useAppDispatch()

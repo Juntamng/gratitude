@@ -21,4 +21,12 @@ export interface GratitudeResponse {
   liked_by: string[];
   date: string;
   author: string;
+  user_id: string;
+}
+
+export interface GratitudeWithProfile extends Gratitude {
+  profile: {
+    name: string;
+    email: string;
+  };
 } 

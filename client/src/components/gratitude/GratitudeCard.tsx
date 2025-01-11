@@ -62,7 +62,7 @@ export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude, isMobile }) =
     <Card 
       sx={{ 
         maxWidth: '100%',
-        borderRadius: isMobile ? 0 : 2,
+        borderRadius: 2,
         '&:hover': !isMobile ? {
           boxShadow: 6,
           transform: 'translateY(-4px)',
