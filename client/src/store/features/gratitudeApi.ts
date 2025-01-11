@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Gratitude, CreateGratitudeDto } from '../../types/gratitude';
 import { RootState } from '../store';
+import { API_URL } from '../../config/constants';
 
 export const gratitudeApi = createApi({
   reducerPath: 'gratitudeApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api',
+    baseUrl: `${API_URL}/api`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {
