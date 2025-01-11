@@ -127,12 +127,12 @@ export const AuthButtons: FC = () => {
     open: Boolean(anchorEl),
     onClose: handleMenuClose,
     anchorOrigin: {
-      vertical: 'bottom',
-      horizontal: 'right',
+      vertical: 'bottom' as const,
+      horizontal: 'right' as const,
     },
     transformOrigin: {
-      vertical: 'top',
-      horizontal: 'right',
+      vertical: 'top' as const,
+      horizontal: 'right' as const,
     },
     sx: {
       '& .MuiPaper-root': {

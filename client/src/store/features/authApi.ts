@@ -1,12 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
 interface LoginCredentials {
   email: string;
   password: string;
