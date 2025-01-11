@@ -92,7 +92,23 @@ export const theme = createTheme({
           }
         }
       }
-    }
+    },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          '&:focus': {
+            outline: 'none',
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
   },
   typography: {
     h5: {

@@ -49,10 +49,6 @@ export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude, isMobile }) =
     '&:hover': {
       backgroundColor: 'transparent'
     },
-    '&:focus': {
-      backgroundColor: 'transparent',
-      outline: 'none'
-    },
     '&.MuiIconButton-root': {
       borderRadius: 0
     }
@@ -108,8 +104,6 @@ export const GratitudeCard: FC<GratitudeCardProps> = ({ gratitude, isMobile }) =
                 color={isLiked ? 'primary' : 'default'}
                 disabled={!isAuthenticated}
                 disableRipple
-                disableFocusRipple
-                disableTouchRipple
                 sx={buttonStyles}
               >
                 {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}

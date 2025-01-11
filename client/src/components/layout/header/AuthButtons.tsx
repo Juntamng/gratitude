@@ -20,7 +20,6 @@ import { logout } from '../../../store/features/authSlice'
 import LoginModal from '../../auth/LoginModal'
 import SignupModal from '../../auth/SignupModal'
 import { CreateGratitudeModal } from '../../gratitude/CreateGratitudeModal'
-import PersonIcon from '@mui/icons-material/Person';
 
 export const AuthButtons: FC = () => {
   const dispatch = useAppDispatch()
@@ -170,9 +169,6 @@ export const AuthButtons: FC = () => {
             aria-haspopup="true"
             aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
             sx={{
-              '&:focus': {
-                outline: 'none'
-              },
               padding: 0,
               '&:hover .MuiAvatar-root': {
                 transform: 'scale(1.05)',
