@@ -2,6 +2,7 @@ import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
 import { API_URL } from '../../config/constants';
 import { setCredentials, logout } from './authSlice';
+import { AuthResponse } from '../../types/auth';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${API_URL}/api`,
@@ -28,10 +29,10 @@ export const baseQueryWithReauth = async (args: any, api: any, extraOptions: any
       },
       api,
       extraOptions
-    );
+    ) as { data: AuthResponse };
 
-    if (refreshResult.data) {
-      api.dispatch(setCredentials(refreshResult.data));
+    if (refreshResult.data?.data) {
+      api.dispatch(setCredentials(refreshResult.data.data));
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());

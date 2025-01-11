@@ -21,6 +21,7 @@ interface AuthResponse {
     };
     session: {
       access_token: string;
+      refresh_token: string;
     };
   };
 }
@@ -55,7 +56,7 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
 
     if (refreshResult.data) {
       // Store new token
-      api.dispatch(setCredentials(refreshResult.data));
+      api.dispatch(setCredentials(refreshResult.data as { user: any; session: { access_token: string; refresh_token: string; }; }));
       // Retry original request
       result = await baseQuery(args, api, extraOptions);
     } else {
